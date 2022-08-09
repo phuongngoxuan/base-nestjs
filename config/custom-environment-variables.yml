@@ -1,0 +1,17 @@
+app:
+  name: APP_NAME
+  port: APP_PORT
+  env: NODE_ENV
+  isTest: IS_TEST
+
+default:
+  host: MYSQL_HOST
+  port: MYSQL_PORT
+  username: MYSQL_USERNAME
+  password: MYSQL_PASSWORD
+  database: MYSQL_DATABASE
+
+cron:
+  enable:
+    __name: CRON_ENABLE
+    __format: json

@@ -16,7 +16,9 @@ export class AdminService {
   }
 
   async findOne(walletAddress: string): Promise<AdminEntity> {
-    return await this.adminRepository.findOne({ walletAddress: walletAddress });
+    return await this.adminRepository.findOne({
+      where: { walletAddress },
+    });
   }
 
   async updateRefreshToken(data: AdminEntity): Promise<void> {

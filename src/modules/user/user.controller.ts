@@ -9,30 +9,4 @@ import { ResGetTierUserType } from './type/res-tier-user.type';
 @Controller('users')
 export class UserController {
   constructor(private userService: UserService) {}
-
-  @ApiOkResponse({
-    type: ResGetUserType,
-    isArray: true,
-  })
-  @Get()
-  async getUsers(
-    @Query() queryUserDto: QueryUserInfoDto,
-  ): Promise<ResGetUserType> {
-    return this.userService.getUsers(queryUserDto);
-  }
-
-  @ApiOkResponse({
-    type: ResGetTierUserType,
-    isArray: true,
-  })
-  @Get('tier')
-  async getTier(): Promise<ResGetTierUserType> {
-    return this.userService.getTier();
-  }
-
-  @Get('stake-amount')
-  async getAmountStake(@Query() params): Promise<string> {
-    //todo
-    return '1000';
-  }
 }

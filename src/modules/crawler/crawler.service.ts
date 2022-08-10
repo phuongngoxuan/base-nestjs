@@ -14,9 +14,12 @@ export class CrawlerService {
     private handlerEvent: HandlerEvent,
     private crawlUtils: CrawlUtils,
   ) {}
+  passed = true;
 
   async start(contractInfo: ContractDto): Promise<void> {
+    this.passed = false;
     await this.rootControllerCrawl(contractInfo);
+    this.passed = true;
   }
 
   async rootControllerCrawl(contract: ContractDto): Promise<void> {

@@ -10,13 +10,11 @@ export const baseContract = {
 
 export const maxRange = 3499;
 
-export const nameEvents = {
+export const eventsName = {
   claimReward: 'ClaimReward',
   stake: 'Stake',
   unStake: 'Unstake',
   claimMultipleReward: 'ClaimMultipleReward',
 };
-
-export const eventNames = {};
 
 export const topics = {};

@@ -14,7 +14,7 @@ import {
 @EntityRepository(UserInfoEntity)
 export class UserInfoRepository extends Repository<UserInfoEntity> {
   async findUserAddress(userAddress: string): Promise<UserInfoEntity> {
-    return await this.findOne({ userAddress });
+    return await this.findOne({ where: { userAddress } });
   }
 
   async countUserTier(tier: number, now: number): Promise<number> {

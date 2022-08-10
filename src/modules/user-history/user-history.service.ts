@@ -5,9 +5,7 @@ import { EventStake } from '../event/dto/event-stake.dto';
 import { UserHistoryEntity } from '../../models/entities/user-history.entity';
 import { EventClaimRewardDto } from '../event/dto/event-claim-reward.dto';
 import { QueryUserHistoryDto } from './dto/query-history-user.dto';
-import { symbol, type } from './constant.ts/user-history.constant';
-import { nameEvents } from '../crawler/config/crawler.config';
-import { PoolService } from '../pool/pool.service';
+import { eventsName } from '../crawler/config/crawler.config';
 import { EventSetTier } from '../event/dto/event-set-tiers.dto';
 import { EventUnStake } from '../event/dto/event-unstake.dto';
 import { EventSetStartStake } from '../event/dto/event-set-start-stake.dto';
@@ -18,7 +16,6 @@ export class UserHistoryService {
   constructor(
     @InjectRepository(UserHistoryRepository, 'default')
     private userHistoryRepository: UserHistoryRepository,
-    private poolService: PoolService,
   ) {}
 
   async getUserHistory(query: QueryUserHistoryDto) {
@@ -29,7 +26,9 @@ export class UserHistoryService {
     txHash: string,
     logIndex: string,
   ): Promise<UserHistoryEntity> {
-    return await this.userHistoryRepository.findOne({ txHash, logIndex });
+    return await this.userHistoryRepository.findOne({
+      where: { txHash, logIndex },
+    });
   }
 
   async createHistoryUser(
@@ -51,13 +50,13 @@ export class UserHistoryService {
     newHistory.blockTimestamp = timestamp;
 
     switch (event.event) {
-      case nameEvents.stake:
+      case eventsName.stake:
         break;
-      case nameEvents.claimReward:
+      case eventsName.claimReward:
         break;
-      case nameEvents.claimMultipleReward:
+      case eventsName.claimMultipleReward:
         break;
-      case nameEvents.unStake:
+      case eventsName.unStake:
         break;
       default:
         break;

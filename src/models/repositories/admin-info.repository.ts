@@ -1,8 +1,7 @@
-import { Repository, EntityRepository } from 'typeorm';
+import { EntityRepository, Repository } from 'typeorm';
 import { AdminEntity } from '../entities/admin-info.entity';
 import { QueryAdminDto } from '../../modules/admin/dto/query-admin.dto';
 import { ResGetAdminType } from '../../modules/admin/type/response-get-admin.type';
-
 @EntityRepository(AdminEntity)
 export class AdminRepository extends Repository<AdminEntity> {
   async getAdminList({
@@ -39,7 +38,9 @@ export class AdminRepository extends Repository<AdminEntity> {
   }
 
   async checkAdminExist(walletAddress: string) {
-    const admin = await this.findOne({ walletAddress: walletAddress });
+    const admin = await this.findOne({
+      where: { walletAddress },
+    });
     if (admin) {
       return true;
     } else {

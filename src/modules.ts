@@ -7,11 +7,10 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CrawlerModule } from './modules/crawler/crawler.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { EventModule } from './modules/event/event.module';
-import { PoolModule } from './modules/pool/pool.module';
-import { UserModule } from './modules/user/user.module';
 import { UserHistoryModule } from './modules/user-history/user-history.module';
 import { ReadScModule } from './modules/read-sc/read-sc.module';
 import { DatabaseCommonRepository } from './models/repositories/repository';
+import { SocketModule } from './modules/socket/socket.module';
 
 const Modules = [
   Logger,
@@ -23,10 +22,9 @@ const Modules = [
   CrawlerModule,
   AdminModule,
   EventModule,
-  PoolModule,
-  UserModule,
   UserHistoryModule,
   ReadScModule,
+  SocketModule,
 ];
 
 export default Modules;

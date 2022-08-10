@@ -20,7 +20,7 @@ export class CrawlUtils {
   async getBlockNumber(contract: ContractDto): Promise<number> {
     const { contractName } = contract;
     const log = await this.crawlStatusRepository.findOne({
-      contractName,
+      where: { contractName },
     });
 
     if (!log) {

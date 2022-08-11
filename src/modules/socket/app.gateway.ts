@@ -15,6 +15,8 @@ import { Server, Socket } from 'socket.io';
   cors: {
     origin: '*',
   },
+  path: '/websocket',
+  serveClient: false,
 })
 export class AppGateway implements OnGatewayInit {
   @WebSocketServer() wss: Server;
@@ -32,12 +34,11 @@ export class AppGateway implements OnGatewayInit {
     this.logger.log('client connection - ', client.id);
   }
 
-  @SubscribeMessage('events')
+  @SubscribeMessage('eventToServer')
   findAll(
     @MessageBody() data: string,
     @ConnectedSocket() client: Socket,
-  ): WsResponse<string> {
-    this.wss.emit('events', 'tex');
-    return { event: 'event', data: data };
+  ): void {
+    this.wss.emit('eventToClient', data);
   }
 }

@@ -1,14 +1,13 @@
 import { abiBase } from '../../../abis/Base.json';
 
-export const baseContract = {
-  abi: abiBase,
-  contract_address: process.env.BASE_CONTRACT_ADDRESS,
+export const baseContractInfo = {
+  abi: abiBase, // file abi.json
+  contractAddress: process.env.BASE_CONTRACT_ADDRESS, // contract address
   rpc: process.env.RPC,
-  first_crawl_block: Number(process.env.FIRST_BLOCK_CRAWLER),
-  contractName: 'base',
+  firstCrawlBlock: Number(process.env.FIRST_CRAWLER_BLOCK), // block start crawler transaction in smart contract
+  contractName: 'base_staking_history', // name the contract to use differently if the crawler has more than one sc
+  maxRange: Number(process.env.MAX_RANGE) || 1000, // block distance
 };
-
-export const maxRange = 3499;
 
 export const eventsName = {
   claimReward: 'ClaimReward',
@@ -16,5 +15,3 @@ export const eventsName = {
   unStake: 'Unstake',
   claimMultipleReward: 'ClaimMultipleReward',
 };
-
-export const topics = {};

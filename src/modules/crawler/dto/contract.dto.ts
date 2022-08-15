@@ -1,15 +1,16 @@
 import { LogEventDto } from './log-event-crawler.dto';
 export class ContractDto {
   abi: any[];
-  contract_address: string;
+  contractAddress: string;
   rpc: string;
+  firstCrawlBlock: number;
   contractName: string;
-  first_crawl_block: number;
+  maxRange: number;
 }
 
 export class GetBlockDto {
-  lateBlockSC: number;
-  getBlockDB: number;
+  lateBlockInSC: number;
+  blockInDB: number;
 }
 export class IEventLogCrawlerOptions {
   eventLogs: LogEventDto;

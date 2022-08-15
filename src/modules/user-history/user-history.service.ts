@@ -44,9 +44,9 @@ export class UserHistoryService {
     const newHistory = new UserHistoryEntity();
 
     newHistory.action = event.event;
-    newHistory.lastBlock = event.blockNumber.toString();
+    newHistory.blockNumber = event.blockNumber;
     newHistory.txHash = event.transactionHash;
-    newHistory.logIndex = event.logIndex.toString();
+    newHistory.logIndex = event.logIndex;
     newHistory.blockTimestamp = timestamp;
 
     switch (event.event) {

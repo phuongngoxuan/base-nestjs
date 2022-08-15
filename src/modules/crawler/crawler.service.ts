@@ -1,49 +1,54 @@
-import { baseContract } from './config/crawler.config';
-import { Injectable } from '@nestjs/common';
-import { CrawlUtils } from './utils/crawler-utils';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CrawlStatusRepository } from '../../models/repositories/crawler.repository';
 import { ContractDto, GetBlockDto } from './dto/contract.dto';
 import { HandlerEvent } from './handler/event.handler';
 import { LogEventDto } from './dto/log-event-crawler.dto';
+import { BlockInfoDto } from './../read-sc/dto/bock-infos.dto';
+import { eventsName, baseContractInfo } from './config/crawler.config';
+import { CrawlStatus } from '../../models/entities/crawler-status.entity';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const Web3 = require('web3');
 @Injectable()
 export class CrawlerService {
   constructor(
     @InjectRepository(CrawlStatusRepository)
     private crawlStatusRepository: CrawlStatusRepository,
     private handlerEvent: HandlerEvent,
-    private crawlUtils: CrawlUtils,
   ) {}
   passed = true;
 
+  // function crawler can be reused many times with parameter contractInfo
   async start(contractInfo: ContractDto): Promise<void> {
-    this.passed = false;
     await this.rootControllerCrawl(contractInfo);
-    this.passed = true;
   }
 
-  async rootControllerCrawl(contract: ContractDto): Promise<void> {
-    while (true) {
-      const { lateBlockSC, getBlockDB } = await this.getBlockSCAndBlockDB(
-        contract,
+  async rootControllerCrawl(contractInfo: ContractDto): Promise<void> {
+    while (this.passed) {
+      this.passed = false;
+      const { lateBlockInSC, blockInDB } = await this.getBlockSCAndBlockDB(
+        contractInfo,
       );
-      const checkBlock: boolean = this.checkBlockValid(lateBlockSC, getBlockDB);
-      if (checkBlock != false) {
-        await this.crawlerController(getBlockDB, lateBlockSC, contract);
+      // check block validate
+      const isValidate: boolean = this.isBlockValid(lateBlockInSC, blockInDB);
+      if (isValidate != false) {
+        await this.crawlerController(blockInDB, lateBlockInSC, contractInfo);
       }
+      this.passed = true;
     }
   }
 
   async getBlockSCAndBlockDB(Contract: ContractDto): Promise<GetBlockDto> {
-    const [lateBlockSC, getBlockDB] = await Promise.all([
-      this.crawlUtils.getLateBlock(Contract),
-      this.crawlUtils.getBlockNumber(Contract),
+    const [lateBlockInSC, blockInDB] = await Promise.all([
+      this.getLateBlock(Contract),
+      this.getBlockNumber(Contract),
     ]);
-    return { lateBlockSC, getBlockDB };
+    return { lateBlockInSC, blockInDB };
   }
 
-  checkBlockValid(lateBlockSC: number, getBlockDB: number): boolean {
-    if (getBlockDB >= lateBlockSC) {
+  // check block valid
+  isBlockValid(lateBlockInSC: number, blockInDB: number): boolean {
+    if (blockInDB >= lateBlockInSC) {
       console.log('----------Waiting for new blocks----------');
       return false;
     } else {
@@ -52,32 +57,30 @@ export class CrawlerService {
   }
 
   async crawlerController(
-    getBlockDB: number,
-    lateBlockSC: number,
-    contract: ContractDto,
-    maxRange?: number,
+    blockInDB: number,
+    lateBlockInSC: number,
+    contractInfo: ContractDto,
   ): Promise<void> {
-    const fromBlock: number = getBlockDB;
-    if (!maxRange) {
-      maxRange = parseInt(process.env.MAX_RANGE, 10);
-    }
-    const toBlock: number = this.getToBlock(lateBlockSC, getBlockDB, maxRange);
-    const events = await this.crawlUtils.crawlEvent(
-      fromBlock,
-      toBlock,
-      contract,
+    const fromBlock: number = blockInDB;
+    const toBlock: number = this.getToBlock(
+      lateBlockInSC,
+      blockInDB,
+      contractInfo.maxRange,
     );
-    await this.handlerEvents(contract, events);
-    await this.updateBlockCrawlSuccess(toBlock, contract);
+    const events = await this.crawlEvent(fromBlock, toBlock, contractInfo);
+    await this.handlerContractInfo(contractInfo, events);
+    await this.updateBlockCrawlSuccess(toBlock, contractInfo);
   }
 
-  async handlerEvents(
+  async handlerContractInfo(
     contract: ContractDto,
     events: LogEventDto[],
   ): Promise<void> {
+    // filter smart contract
     switch (contract.contractName) {
-      case baseContract.contractName:
-        await this.handlerEvent.handlerAllEvents(events);
+      case baseContractInfo.contractName:
+        // filter handler base sc
+        await this.handlerEvent.handlerBaseSC(events);
         break;
       default:
         break;
@@ -89,7 +92,7 @@ export class CrawlerService {
     contract: ContractDto,
   ): Promise<void> {
     const blockNumber = Number(toBlock);
-    const blockTimestamp = await this.crawlUtils.getBlockTimestamp(
+    const blockTimestamp = await this.getBlockTimestamp(
       blockNumber,
       contract.rpc,
     );
@@ -100,15 +103,96 @@ export class CrawlerService {
     console.log('update block new block--' + toBlock);
   }
 
+  // calculate toBlock number
   getToBlock(
-    lateBlockSC: number,
-    getBlockDB: number,
+    lateBlockInSC: number,
+    blockInDB: number,
     maxRange: number,
   ): number {
-    if (lateBlockSC - getBlockDB < maxRange) {
-      return lateBlockSC;
+    if (lateBlockInSC - blockInDB < maxRange) {
+      return lateBlockInSC;
     } else {
-      return getBlockDB + maxRange;
+      return blockInDB + maxRange;
     }
+  }
+
+  // get block number in db
+  async getBlockNumber(contract: ContractDto): Promise<number> {
+    const { contractName } = contract;
+    const log = await this.crawlStatusRepository.findOne({
+      where: { contractName },
+    });
+
+    if (!log) {
+      const crawl = new CrawlStatus();
+      crawl.contractAddress = contract.contractAddress;
+      crawl.blockNumber = contract.firstCrawlBlock;
+      crawl.contractName = contract.contractName;
+      //get timestamp at current block
+      const timeStamp = await this.getBlockTimestamp(
+        contract.firstCrawlBlock,
+        contract.rpc,
+      );
+      crawl.blockTimestamp = timeStamp;
+      // create new record crawlerInfo in database
+      await this.crawlStatusRepository.save(crawl, { reload: false });
+      return crawl.blockNumber;
+    } else {
+      return Number(log.blockNumber);
+    }
+  }
+
+  /*
+   * get logs fromBlock toBlock input
+   */
+  async crawlEvent(
+    fromBlockNumber: number,
+    toBlockNumber: number,
+    contract: ContractDto,
+  ): Promise<LogEventDto[]> {
+    const web3Provider = new Web3.providers.HttpProvider(contract.rpc);
+    const web3 = new Web3(web3Provider);
+    const contractWeb3 = new web3.eth.Contract(
+      contract.abi,
+      contract.contractAddress,
+    );
+
+    const eventLogs: LogEventDto[] = await contractWeb3.getPastEvents(
+      'allEvents',
+      {
+        fromBlock: fromBlockNumber,
+        toBlock: toBlockNumber,
+      },
+      (err) => {
+        if (err) {
+          console.error(err);
+        }
+      },
+    );
+    return eventLogs;
+  }
+
+  async getLateBlock(config: ContractDto): Promise<number> {
+    const web3Provider = new Web3.providers.HttpProvider(config.rpc);
+    const web3 = new Web3(web3Provider);
+    const lateBlock = await web3.eth.getBlockNumber();
+    return lateBlock - 3;
+  }
+
+  async getBlockTimestamp(block: number, rpc: string): Promise<number> {
+    const web3Provider = new Web3.providers.HttpProvider(rpc);
+    const web3 = new Web3(web3Provider);
+    // Get block can false not good for performance (pending)
+    for (let i = 0; i < 100; i++) {
+      const blockInfo: BlockInfoDto = await web3.eth.getBlock(block);
+      if (blockInfo) return blockInfo.timestamp;
+    }
+    throw new HttpException(
+      {
+        status: HttpStatus.NOT_FOUND,
+        error: `Couldn't find blockInfo`,
+      },
+      HttpStatus.NOT_FOUND,
+    );
   }
 }

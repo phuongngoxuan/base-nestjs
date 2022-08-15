@@ -14,23 +14,65 @@ export class userHistories1646381336601 implements MigrationInterface {
             unsigned: true,
           },
           {
-            name: 'pool_id',
+            name: 'user_address',
+            type: 'varchar',
+          },
+          {
+            name: 'from',
+            type: 'varchar',
+          },
+          {
+            name: 'to',
+            type: 'varchar',
+          },
+          {
+            name: 'tx_hash',
+            type: 'varchar',
+          },
+          {
+            name: 'block_number',
+            type: 'varchar',
+          },
+          {
+            name: 'log_index',
             type: 'int',
+          },
+          {
+            name: 'action',
+            type: 'varchar',
+          },
+          {
+            name: 'amount',
+            type: 'decimal',
+            precision: 40,
+            scale: 30,
             default: '0',
           },
           {
-            name: 'pool_address',
+            name: 'symbol',
             type: 'varchar',
-            default: '0',
           },
           {
-            name: 'url',
-            type: 'varchar',
+            name: 'decimal',
+            type: 'int',
+            default: 0,
           },
           {
             name: 'block_timestamp',
             type: 'int',
-            isNullable: false,
+          },
+          {
+            name: 'pool_id',
+            type: 'int',
+            default: 0,
+          },
+          {
+            name: 'pool_address',
+            type: 'varchar',
+          },
+          {
+            name: 'url',
+            type: 'varchar',
           },
           {
             name: 'start_stake',
@@ -38,50 +80,8 @@ export class userHistories1646381336601 implements MigrationInterface {
             default: 0,
           },
           {
-            name: 'last_block',
-            type: 'int',
-            default: '0',
-          },
-          {
-            name: 'symbol',
-            type: 'varchar',
-            default: '0',
-          },
-          {
-            name: 'type',
-            type: 'varchar',
-            default: '0',
-          },
-          {
             name: 'chain_id',
-            type: 'varchar',
-            default: '0',
-          },
-          {
-            name: 'user_address',
-            type: 'varchar',
-            default: '0',
-          },
-          {
-            name: 'tx_hash',
-            type: 'varchar',
-            default: '0',
-          },
-          {
-            name: 'log_index',
-            type: 'varchar',
-          },
-          {
-            name: 'action',
-            type: 'varchar',
-            default: '0',
-          },
-          {
-            name: 'amount',
-            type: 'decimal',
-            precision: 40,
-            scale: 0,
-            default: '0',
+            type: 'int',
           },
           {
             name: 'data',

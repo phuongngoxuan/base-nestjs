@@ -1,10 +1,11 @@
 import { Module, Logger } from '@nestjs/common';
 import { EventGateway } from './modules/socket/event.gateway';
-import { AlertGateway } from './modules/socket/alert.gateway';
+import { NotificationGateway } from './modules/socket/notification.gateway';
+import { RoomGateway } from './modules/socket/room.gateway';
 import Modules from 'src/modules';
 @Module({
   imports: [...Modules],
   controllers: [],
-  providers: [Logger, EventGateway, AlertGateway],
+  providers: [Logger, EventGateway, NotificationGateway, RoomGateway],
 })
 export class AppModule {}

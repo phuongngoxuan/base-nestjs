@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Command, Console } from 'nestjs-console';
 import { CrawlerService } from './crawler.service';
-import { baseContract } from './config/crawler.config';
+import { baseContractInfo } from './config/crawler.config';
 
 @Console()
 @Injectable()
@@ -14,7 +14,7 @@ export class CrawlerAllEventService {
   })
   async startCrawler(): Promise<void> {
     try {
-      await this.crawlerService.start(baseContract);
+      await this.crawlerService.start(baseContractInfo);
     } catch (error) {
       console.error(error);
       process.exit(1);

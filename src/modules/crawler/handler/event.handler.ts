@@ -13,7 +13,7 @@ export class HandlerEvent {
     private readScService: ReadScService,
   ) {}
   // crawler event eth
-  async handlerAllEvents(events: LogEventDto[]): Promise<void> {
+  async handlerBaseSC(events: LogEventDto[]): Promise<void> {
     for (const event of events) {
       switch (event.event) {
         case eventsName.stake:

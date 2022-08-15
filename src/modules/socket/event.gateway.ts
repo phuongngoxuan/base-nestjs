@@ -21,7 +21,7 @@ import { Server, Socket } from 'socket.io';
 export class EventGateway implements OnGatewayInit {
   @WebSocketServer() wss: Server;
 
-  private logger: Logger = new Logger('AppGateway');
+  private logger: Logger = new Logger('EventGateway');
   afterInit(server: Server) {
     this.logger.log('init');
   }
@@ -39,7 +39,6 @@ export class EventGateway implements OnGatewayInit {
     @MessageBody() data: string,
     @ConnectedSocket() client: Socket,
   ): void {
-    console.log('in handlert alert server');
     this.wss.emit('alertToClient', data);
   }
 }

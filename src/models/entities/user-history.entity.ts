@@ -11,47 +11,56 @@ export class UserHistoryEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'pool_id' })
-  poolId: number;
-
   @Column({ name: 'user_address' })
   userAddress: string;
 
-  @Column({ name: 'symbol' })
-  symbol: string;
+  @Column({ name: 'from' })
+  from: string;
 
-  @Column({ name: 'chain_id' })
-  chainId: string;
-
-  @Column({ name: 'block_timestamp' })
-  blockTimestamp: number;
-
-  @Column({ name: 'pool_address' })
-  poolAddress: string;
-
-  @Column({ name: 'last_block' })
-  lastBlock: string;
+  @Column({ name: 'to' })
+  to: string;
 
   @Column({ name: 'tx_hash' })
   txHash: string;
 
+  @Column({ name: 'block_number' })
+  blockNumber: number;
+
   @Column({ name: 'log_index' })
-  logIndex: string;
+  logIndex: number;
 
-  @Column({ name: 'data', type: 'json' })
-  data: string;
-
-  @Column()
-  url: string;
-
-  @Column()
+  @Column({ name: 'action' })
   action: string;
 
-  @Column()
+  @Column({ name: 'amount' })
   amount: string;
+
+  @Column({ name: 'symbol' })
+  symbol: string;
+
+  @Column({ name: 'decimal' })
+  decimal: number;
+
+  @Column({ name: 'block_timestamp' })
+  blockTimestamp: number;
+
+  @Column({ name: 'pool_id' })
+  poolId: number;
+
+  @Column({ name: 'pool_address' })
+  poolAddress: string;
+
+  @Column({ name: 'url' })
+  url: string;
 
   @Column({ name: 'start_stake' })
   startStake: string;
+
+  @Column({ name: 'chain_id' })
+  chainId: number;
+
+  @Column({ name: 'data', type: 'json' })
+  data: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

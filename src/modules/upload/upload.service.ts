@@ -47,6 +47,7 @@ export class UploadService {
       ContentType: `image/${fileType}`,
       ACL: 'public-read',
     };
+
     const { Location, Key } = await s3.upload(params).promise();
 
     return { location: Location, key: Key };

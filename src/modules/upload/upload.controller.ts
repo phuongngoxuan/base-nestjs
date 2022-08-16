@@ -29,7 +29,7 @@ import { DeleteFileDto } from './dto/delete.dto';
 export class UploadController {
   constructor(private uploadService: UploadService) {}
 
-  @UseGuards(AtGuards)
+  //   @UseGuards(AtGuards)
   @HttpCode(HttpStatus.OK)
   @Post('image')
   @ApiConsumes('multipart/form-data')

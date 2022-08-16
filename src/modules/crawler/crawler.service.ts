@@ -17,7 +17,6 @@ export class CrawlerService {
     private handlerEvent: HandlerEvent,
   ) {}
   passed = true;
-
   // function crawler can be reused many times with parameter contractInfo
   async start(contractInfo: ContractDto): Promise<void> {
     await this.rootControllerCrawl(contractInfo);
@@ -41,7 +40,7 @@ export class CrawlerService {
   async getBlockSCAndBlockDB(Contract: ContractDto): Promise<GetBlockDto> {
     const [lateBlockInSC, blockInDB] = await Promise.all([
       this.getLateBlock(Contract),
-      this.getBlockNumber(Contract),
+      this.getBlockNumberInDB(Contract),
     ]);
     return { lateBlockInSC, blockInDB };
   }
@@ -68,11 +67,11 @@ export class CrawlerService {
       contractInfo.maxRange,
     );
     const events = await this.crawlEvent(fromBlock, toBlock, contractInfo);
-    await this.handlerContractInfo(contractInfo, events);
+    await this.handlerContract(contractInfo, events);
     await this.updateBlockCrawlSuccess(toBlock, contractInfo);
   }
 
-  async handlerContractInfo(
+  async handlerContract(
     contract: ContractDto,
     events: LogEventDto[],
   ): Promise<void> {
@@ -96,6 +95,7 @@ export class CrawlerService {
       blockNumber,
       contract.rpc,
     );
+
     await this.crawlStatusRepository.update(
       { contractName: contract.contractName },
       { blockNumber, blockTimestamp },
@@ -117,7 +117,7 @@ export class CrawlerService {
   }
 
   // get block number in db
-  async getBlockNumber(contract: ContractDto): Promise<number> {
+  async getBlockNumberInDB(contract: ContractDto): Promise<number> {
     const { contractName } = contract;
     const log = await this.crawlStatusRepository.findOne({
       where: { contractName },
@@ -142,9 +142,7 @@ export class CrawlerService {
     }
   }
 
-  /*
-   * get logs fromBlock toBlock input
-   */
+  // get logs fromBlock toBlock input
   async crawlEvent(
     fromBlockNumber: number,
     toBlockNumber: number,
@@ -172,21 +170,25 @@ export class CrawlerService {
     return eventLogs;
   }
 
+  // get late block - 1
   async getLateBlock(config: ContractDto): Promise<number> {
     const web3Provider = new Web3.providers.HttpProvider(config.rpc);
     const web3 = new Web3(web3Provider);
     const lateBlock = await web3.eth.getBlockNumber();
-    return lateBlock - 3;
+    return lateBlock - 1;
   }
 
+  // get time in block
   async getBlockTimestamp(block: number, rpc: string): Promise<number> {
     const web3Provider = new Web3.providers.HttpProvider(rpc);
     const web3 = new Web3(web3Provider);
+
     // Get block can false not good for performance (pending)
     for (let i = 0; i < 100; i++) {
       const blockInfo: BlockInfoDto = await web3.eth.getBlock(block);
       if (blockInfo) return blockInfo.timestamp;
     }
+
     throw new HttpException(
       {
         status: HttpStatus.NOT_FOUND,

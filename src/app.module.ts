@@ -6,6 +6,6 @@ import Modules from 'src/modules';
 @Module({
   imports: [...Modules],
   controllers: [],
-  providers: [Logger, EventGateway, NotificationGateway, RoomGateway],
+  providers: [Logger],
 })
 export class AppModule {}

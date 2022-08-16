@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class LoginDto {
   @ApiProperty({
     required: true,
-    example: '0x882D4b497Fb7Bf077109835812688509eC8EFBa7',
+    example: '0xBf3Ffd23Cff26bdb4d94376907A58F00eEb33023',
   })
   @IsNotEmpty()
   @IsString()
@@ -13,7 +13,7 @@ export class LoginDto {
   @ApiProperty({
     required: true,
     example:
-      '0xae4cb17dbadd2cb2fefcba847cc8b8d3c496fa480e809b646ce9b4b8bb2eebe165f87843e7aa33157cf769b22ca0101b394f4077b9f0151b8dcd02ad462c7a381b',
+      '0xf62b790ac7db828cd874df31d0fbd2a022c749508ed85ff950bf08916e6ec68530472e8441022b1c4a658f01e4408891e1793464825a430cd4df2a40c37fb9a81c',
   })
   @IsNotEmpty()
   @IsString()
@@ -21,7 +21,7 @@ export class LoginDto {
 
   @ApiProperty({
     required: true,
-    example: 'base message signature',
+    example: 'Red Kite User Signature',
   })
   @IsNotEmpty()
   @IsString()

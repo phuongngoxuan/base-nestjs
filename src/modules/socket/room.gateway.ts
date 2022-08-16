@@ -7,7 +7,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 
-import { Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({
@@ -18,12 +18,13 @@ import { Server, Socket } from 'socket.io';
   serveClient: false,
   namespace: 'room',
 })
+@Injectable()
 export class RoomGateway implements OnGatewayInit {
   @WebSocketServer() wss: Server;
 
   private logger: Logger = new Logger('RoomGateway');
   afterInit(server: Server) {
-    this.logger.log('init');
+    //
   }
 
   @SubscribeMessage('chatRoomToServer')

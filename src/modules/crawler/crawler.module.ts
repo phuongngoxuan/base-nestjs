@@ -1,4 +1,5 @@
-import { Module, HttpModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
 import { CrawlerService } from './crawler.service';
 import { EventModule } from '../event/event.module';
 import { HandlerEvent } from './handler/event.handler';

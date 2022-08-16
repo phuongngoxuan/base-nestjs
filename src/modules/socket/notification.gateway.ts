@@ -8,7 +8,7 @@ import {
   WsResponse,
 } from '@nestjs/websockets';
 
-import { Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({
@@ -19,12 +19,13 @@ import { Server, Socket } from 'socket.io';
   serveClient: false,
   namespace: 'notification',
 })
+@Injectable()
 export class NotificationGateway implements OnGatewayInit {
   @WebSocketServer() wss: Server;
 
   private logger: Logger = new Logger('NotificationGateway');
   afterInit(server: Server) {
-    this.logger.log('init');
+    //
   }
 
   @SubscribeMessage('notificationToServer')

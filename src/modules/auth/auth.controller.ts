@@ -14,7 +14,6 @@ import { Request } from 'express';
 import { AtGuards } from '../../common/guards/at.guards';
 import { RtGuards } from '../../common/guards/rt.guards';
 import { GetCurrentUser } from '../../common/decorators/get-current-user.decorators';
-import { AuthGuard } from '@nestjs/passport';
 import { resTokenType } from './types/response-token.type';
 
 @ApiBearerAuth('defaultBearerAuth')

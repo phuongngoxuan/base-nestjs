@@ -6,8 +6,8 @@ import { join } from 'path';
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { SchedulerRegistry } from '@nestjs/schedule';
-import { ResponseTransformInterceptor } from 'src/shares/interceptors/response.interceptor';
+// import { SchedulerRegistry } from '@nestjs/schedule';
+// import { ResponseTransformInterceptor } from 'src/shares/interceptors/response.interceptor';
 import { BodyValidationPipe } from 'src/shares/pipes/body.validation.pipe';
 import { AppModule } from 'src/app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -18,6 +18,7 @@ const prefix = config.get<string>('app.prefix');
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,
+    logger: ['log', 'debug', 'error', 'verbose', 'warn'],
   });
 
   app.setGlobalPrefix(process.env.PREFIX);
@@ -46,7 +47,9 @@ async function bootstrap(): Promise<void> {
 
   await app.listen(appPort);
   const logger = app.get(Logger);
-  logger.setContext('NestApplication');
-  logger.log(`Application is running on: ${await app.getUrl()}`);
+  logger.log(
+    `Application is running on: ${await app.getUrl()}`,
+    'NestApplication',
+  );
 }
 bootstrap();

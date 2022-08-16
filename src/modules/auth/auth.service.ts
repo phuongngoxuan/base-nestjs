@@ -14,11 +14,18 @@ export class AuthService {
   ) {}
 
   async login(loginDto: LoginDto): Promise<resTokenType> {
+    // check WalletAddress, Signature, Message
     const admin = await this.authUtilsService.validateAccount(loginDto);
+
+    // sign AT and RT
     const tokens = await this.authUtilsService.getToken(loginDto);
+
+    // hash RT
     admin.refreshToken = createHash('sha256')
       .update(tokens.refreshToken)
       .digest('hex');
+
+    // update RT in table admin
     await this.adminService.updateRefreshToken(admin);
 
     return {
@@ -38,21 +45,25 @@ export class AuthService {
     message: string,
     refreshToken: string,
   ): Promise<resTokenType> {
+    // check admin exit
     const admin = await this.adminService.findOne(walletAddress);
     if (!admin) {
       throw new ForbiddenException('Access Denied');
     }
 
+    // hash RT input and compare RT in database
     const rtMatches = createHash('sha256').update(refreshToken).digest('hex');
     if (rtMatches != admin.refreshToken) {
       throw new ForbiddenException('Access Denied');
     }
+    // create new AT and RT
     const tokens = await this.authUtilsService.getToken({
       walletAddress,
       signature,
       message,
     });
 
+    // hash new RT and update RT in database
     const newHashRt = createHash('sha256')
       .update(tokens.refreshToken)
       .digest('hex');

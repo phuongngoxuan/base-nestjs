@@ -8,7 +8,7 @@ import {
   WsResponse,
 } from '@nestjs/websockets';
 
-import { Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({
@@ -18,12 +18,13 @@ import { Server, Socket } from 'socket.io';
   path: '/websocket',
   serveClient: false,
 })
+@Injectable()
 export class EventGateway implements OnGatewayInit {
   @WebSocketServer() wss: Server;
 
   private logger: Logger = new Logger('EventGateway');
   afterInit(server: Server) {
-    this.logger.log('init');
+    //
   }
 
   @SubscribeMessage('eventToServer')

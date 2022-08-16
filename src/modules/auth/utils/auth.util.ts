@@ -18,7 +18,6 @@ export class AuthUtilsService {
 
   async validateAccount(loginDto: LoginDto): Promise<AdminEntity> {
     const checkMessage = await this.checkRecoverSameAddress(loginDto);
-    console.log(checkMessage);
     if (!checkMessage) {
       throw new HttpException(
         httpErrors.ACCOUNT_HASH_NOT_MATCH,
@@ -33,6 +32,7 @@ export class AuthUtilsService {
     }
   }
 
+  //check address web3js
   async checkRecoverSameAddress({
     walletAddress,
     message,
@@ -53,6 +53,7 @@ export class AuthUtilsService {
     }
   }
 
+  // walletAddress signature message time --> sign token, AT expireIn 15m, RT expireIn 1w
   async getToken(loginDto: LoginDto): Promise<Tokens> {
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(

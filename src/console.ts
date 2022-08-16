@@ -8,7 +8,7 @@ const bootstrap = new BootstrapConsole({
   module: AppModule,
   useDecorators: true,
   contextOptions: {
-    logger: true,
+    logger: ['log', 'error', 'warn', 'debug', 'verbose'],
   },
 });
 bootstrap.init().then(async (app) => {

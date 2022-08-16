@@ -24,7 +24,7 @@ export class UserHistoryService {
 
   async findTransactionHash(
     txHash: string,
-    logIndex: string,
+    logIndex: number,
   ): Promise<UserHistoryEntity> {
     return await this.userHistoryRepository.findOne({
       where: { txHash, logIndex },

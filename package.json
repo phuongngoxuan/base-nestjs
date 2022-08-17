@@ -9,7 +9,7 @@
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "npm run start:dev",
+    "start": "yarn start:dev",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
@@ -28,8 +28,6 @@
     "console": "node dist/console.js"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.150.0",
-    "@aws-sdk/s3-request-presigner": "^3.150.0",
     "@nestjs/axios": "^0.1.0",
     "@nestjs/common": "^9.0.9",
     "@nestjs/core": "^9.0.9",

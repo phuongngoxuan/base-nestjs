@@ -45,7 +45,7 @@ async function bootstrap(): Promise<void> {
   app.useStaticAssets(join(__dirname, '..', 'src/static'));
   app.use(helmet());
 
-  await app.listen(appPort || 8888);
+  await app.listen(appPort || 8080);
   const logger = app.get(Logger);
   logger.log(
     `Application is running on: ${await app.getUrl()}`,

@@ -14,3 +14,12 @@ services:
       - 3322:3306
     volumes:
       - .data/mysql:/var/lib/mysql
+  app:
+    build: .
+    container_name: base-nestjs
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/app
+    depends_on:
+      - mysql

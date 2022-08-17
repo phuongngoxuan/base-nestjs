@@ -1,4 +1,4 @@
-FROM node:12.22.1 as builder
+FROM node:14.18.1 as builder
 WORKDIR /app
 COPY ./package.json /app
 COPY ./yarn.lock ./

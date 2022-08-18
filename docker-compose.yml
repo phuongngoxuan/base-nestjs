@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3'
 services:
   mysql:
     image: mysql:8.0.25
@@ -10,15 +10,15 @@ services:
       MYSQL_USER: 'test'
       MYSQL_PASSWORD: '1'
       LANG: C.UTF-8
-    ports:
-      - 3322:3306
     volumes:
       - .data/mysql:/var/lib/mysql
+    ports:
+      - 3322:3306
   app:
     build: .
     container_name: base-nestjs
     ports:
-      - 3000:3000
+      - 3000:8888
     volumes:
       - .:/app
     depends_on:

@@ -8,5 +8,5 @@ RUN chown -R node:node /app
 RUN yarn install
 RUN apk update && apk add bash 
 COPY . /app
-EXPOSE 3000
+EXPOSE 8888
 CMD ["yarn","start:dev"]

@@ -6,7 +6,6 @@ RUN chown -R node:node /app
 #RUN chmod +x /usr/src/app/docker-entrypoint.sh
 # COPY . .
 RUN yarn install
-RUN apk update && apk add bash 
 COPY . /app
 EXPOSE 8888
 CMD ["yarn","start:dev"]

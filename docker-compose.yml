@@ -23,3 +23,11 @@ services:
       - .:/app
     depends_on:
       - mysql
+
+  redis:
+    image: 'redis:6-alpine'
+    container_name: base-redis
+    ports:
+      - 6379:6379
+    volumes:
+      - .data/redis:/data

@@ -1,6 +1,6 @@
 import { CacheModule, Logger } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
-// import { BullModule } from '@nestjs/bull';
+import { BullModule } from '@nestjs/bull';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConsoleModule } from 'nestjs-console';
 import { defaultConfig } from 'src/configs/database.config';
@@ -15,6 +15,7 @@ import { SocketModule } from './modules/socket/socket.module';
 import { UploadModule } from './modules/upload/upload.module';
 import { redisConfig } from 'src/configs/redis.config';
 import * as redisStore from 'cache-manager-redis-store';
+import { MailModule } from './modules/mail/mail.module';
 
 const Modules = [
   ScheduleModule.forRoot(),
@@ -30,14 +31,15 @@ const Modules = [
   SocketModule,
   UploadModule,
   SocketModule,
-  // BullModule.forRoot({
-  //   url: `${redisConfig.host}:${redisConfig.port}`,
-  // }),
-  // CacheModule.register({
-  //   store: redisStore,
-  //   ...redisConfig,
-  //   isGlobal: true,
-  // }),
+  BullModule.forRoot({
+    redis: redisConfig,
+  }),
+  CacheModule.register({
+    store: redisStore,
+    ...redisConfig,
+    isGlobal: true,
+  }),
+  MailModule,
 ];
 
 export default Modules;

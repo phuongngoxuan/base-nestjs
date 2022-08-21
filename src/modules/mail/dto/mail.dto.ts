@@ -12,4 +12,10 @@ export class MailDto {
     example: '0xBf3Ffd23Cff26bdb4d94376907A58F00eEb33023',
   })
   user: string;
+
+  @ApiProperty({
+    required: true,
+    example: 'hello',
+  })
+  message: string;
 }

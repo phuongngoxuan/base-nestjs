@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserHistoryRepository } from '../../models/repositories/user-history.repository';
-import { EventStake } from '../event/dto/event-stake.dto';
 import { UserHistoryEntity } from '../../models/entities/user-history.entity';
-import { EventClaimRewardDto } from '../event/dto/event-claim-reward.dto';
 import { QueryUserHistoryDto } from './dto/query-history-user.dto';
+import { EventStake } from '../event/dto/event-stake.dto';
+import { EventClaimRewardDto } from '../event/dto/event-claim-reward.dto';
 import { eventsName } from '../crawler/config/crawler.config';
 import { EventSetTier } from '../event/dto/event-set-tiers.dto';
 import { EventUnStake } from '../event/dto/event-unstake.dto';
@@ -29,38 +29,5 @@ export class UserHistoryService {
     return await this.userHistoryRepository.findOne({
       where: { txHash, logIndex },
     });
-  }
-
-  async createHistoryUser(
-    event:
-      | EventStake
-      | EventClaimRewardDto
-      | EventSetTier
-      | EventUnStake
-      | EventSetStartStake
-      | EventClaimMultipleRewardDto,
-    timestamp: number,
-  ): Promise<void> {
-    const newHistory = new UserHistoryEntity();
-
-    newHistory.action = event.event;
-    newHistory.blockNumber = event.blockNumber;
-    newHistory.txHash = event.transactionHash;
-    newHistory.logIndex = event.logIndex;
-    newHistory.blockTimestamp = timestamp;
-
-    switch (event.event) {
-      case eventsName.stake:
-        break;
-      case eventsName.claimReward:
-        break;
-      case eventsName.claimMultipleReward:
-        break;
-      case eventsName.unStake:
-        break;
-      default:
-        break;
-    }
-    await this.userHistoryRepository.save(newHistory);
   }
 }

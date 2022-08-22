@@ -1,6 +1,6 @@
 import { UserHistoryEntity } from '../../../models/entities/user-history.entity';
 import { ApiProperty } from '@nestjs/swagger';
-export class ResGetUserHistory {
+export class UserHistoryType {
   @ApiProperty()
   data: UserHistoryEntity[];
   @ApiProperty()

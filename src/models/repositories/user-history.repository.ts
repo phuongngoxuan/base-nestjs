@@ -1,7 +1,7 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { UserHistoryEntity } from 'src/models/entities/user-history.entity';
 import { QueryUserHistoryDto } from '../../modules/user-history/dto/query-history-user.dto';
-import { ResGetUserHistory } from '../../modules/user-history/type/respose-get-history-user.type';
+import { UserHistoryType } from '../../modules/user-history/type/user-history.type';
 
 @EntityRepository(UserHistoryEntity)
 export class UserHistoryRepository extends Repository<UserHistoryEntity> {
@@ -10,7 +10,7 @@ export class UserHistoryRepository extends Repository<UserHistoryEntity> {
     sort,
     page,
     limit,
-  }: QueryUserHistoryDto): Promise<ResGetUserHistory> {
+  }: QueryUserHistoryDto): Promise<UserHistoryType> {
     const builder = this.createQueryBuilder('user_histories');
     // search
     if (account) {

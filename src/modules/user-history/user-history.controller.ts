@@ -1,6 +1,6 @@
 import { Controller, Query, Get } from '@nestjs/common';
 import { QueryUserHistoryDto } from './dto/query-history-user.dto';
-import { ResGetUserHistory } from './type/respose-get-history-user.type';
+import { UserHistoryType } from './type/user-history.type';
 import { UserHistoryService } from './user-history.service';
 import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
 
@@ -10,13 +10,13 @@ export class UserHistoryController {
   constructor(private userHistoryService: UserHistoryService) {}
 
   @ApiOkResponse({
-    type: ResGetUserHistory,
+    type: UserHistoryType,
     isArray: true,
   })
   @Get()
-  async getHistoryUser(
+  async getUserHistory(
     @Query() query: QueryUserHistoryDto,
-  ): Promise<ResGetUserHistory> {
+  ): Promise<UserHistoryType> {
     return await this.userHistoryService.getUserHistory(query);
   }
 }

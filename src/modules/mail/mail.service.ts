@@ -11,40 +11,24 @@ export class MailService {
   constructor(
     private readonly mailerService: MailerService,
     @InjectQueue('mail') private readonly emailQueue: Queue,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache
-  ) { }
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   sendMail = async (mailDto: MailDto): Promise<void> => {
-
-
-    await this.emailQueue.add('sendMail', {
-      to: ["honganhnguyen8763@gmail.com"],
-      from: "xuanngoktvt@gmail.com",
-      subject: mailDto.message,
-      template: process.cwd() + "/src/modules/mail/templates/claimReward.hbs",
-      context: {},
-    }, {
-      backoff: 10,
-      attempts: 10
-    });
-  }
-
-
-  //   await this.mailerService.sendMail({
-  //     from: "xuanngoktvt@gmail.com",
-  //     to: ["honganhnguyen8763@gmail.com"],
-  //     subject: "",
-  //     template: process.cwd() + "/src/modules/mail/templates/claimReward.hbs",
-  //     context: {
-  //       time: "",
-  //       walletAddress: "",
-  //       amount: "",
-  //       chain: "",
-  //       stableCoin: "",
-  //       pool: "",
-  //       dueToUnlock: "",
-  //       percent: "",
-  //     },
-  //   });
-  // };
+    await this.emailQueue.add(
+      'sendMail',
+      {
+        to: ['honganhnguyen8763@gmail.com'],
+        from: 'xuanngoktvt@gmail.com',
+        subject: mailDto.message,
+        template: process.cwd() + '/src/modules/mail/templates/claimReward.hbs',
+        context: {},
+      },
+      {
+        backoff: 5000, // Backoff setting for automatic retries if the job fails
+        attempts: 100, // The total number of attempts to try the job until it completes
+        removeOnComplete: true,
+      },
+    );
+  };
 }

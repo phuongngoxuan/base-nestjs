@@ -31,9 +31,9 @@ import { MailProcessor } from './mail.processor';
         },
       },
     }),
-    BullModule.registerQueue({ name: "mail" }),
+    BullModule.registerQueue({ name: 'mail' }),
   ],
   providers: [MailService, MailProcessor],
   controllers: [MailController],
 })
-export class MailModule { }
+export class MailModule {}

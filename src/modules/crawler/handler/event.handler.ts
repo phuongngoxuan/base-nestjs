@@ -9,6 +9,8 @@ import { UserHistoryRepository } from '../../../models/repositories/user-history
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserHistoryEntity } from '../../../models/entities/user-history.entity';
 import { BlockInfoDto } from '../../read-sc/dto/bock-infos.dto';
+import { EventDeposit } from '../dto/event-deposit.dto';
+import { EventBoost } from '../dto/event-boost.dto';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Web3 = require('web3');
 @Injectable()
@@ -44,10 +46,10 @@ export class HandlerEvent {
 
         switch (event) {
           case eventsName.boost: // user: address, pid: uint256, tokenId: uint256 event Boost
-            const eventStake = eventInfo as EventStake;
+            const eventBoost = eventInfo as EventBoost;
             break;
           case eventsName.deposit: //user: address, pid: uint256, amount:uint256 Deposit
-            const eventUnStake = eventInfo as EventUnStake;
+            const eventDeposit = eventInfo as EventDeposit;
             break;
           case eventsName.claimReward:
             break;

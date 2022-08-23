@@ -78,7 +78,6 @@ export class CrawlerService {
     // filter smart contract
     switch (contract.contractName) {
       case baseContractInfo.contractName:
-        // filter handler base sc
         await this.handlerEvent.handlerBaseSC(events);
         break;
       default:
@@ -183,7 +182,7 @@ export class CrawlerService {
     const web3Provider = new Web3.providers.HttpProvider(rpc);
     const web3 = new Web3(web3Provider);
 
-    // Get block can false not good for performance (pending)
+    // Get block can false in testnet not good for performance (pending)
     for (let i = 0; i < 100; i++) {
       const blockInfo: BlockInfoDto = await web3.eth.getBlock(block);
       if (blockInfo) return blockInfo.timestamp;

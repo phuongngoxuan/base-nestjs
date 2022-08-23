@@ -14,4 +14,6 @@ export const eventsName = {
   stake: 'Stake',
   unStake: 'Unstake',
   claimMultipleReward: 'ClaimMultipleReward',
+  boost: 'Boost',
+  deposit: 'Deposit',
 };

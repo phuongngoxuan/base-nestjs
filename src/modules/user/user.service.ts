@@ -8,4 +8,14 @@ export class UserService {
     @InjectRepository(UserInfoRepository, 'default')
     private userInfoRepository: UserInfoRepository,
   ) {}
+
+  userInfo = async () => {
+    //example join user and history
+    const data = this.userInfoRepository
+      .createQueryBuilder('user_info')
+      .leftJoinAndSelect('user_info.history', 'user_histories')
+      .getMany();
+
+    return data;
+  };
 }

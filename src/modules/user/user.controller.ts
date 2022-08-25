@@ -9,4 +9,10 @@ import { ResGetTierUserType } from './type/res-tier-user.type';
 @Controller('users')
 export class UserController {
   constructor(private userService: UserService) {}
+
+  @Get('')
+  findAll(): Promise<any> {
+    const userInfo = this.userService.userInfo();
+    return userInfo;
+  }
 }

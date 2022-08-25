@@ -16,7 +16,7 @@ services:
       - 3322:3306
   app:
     build: .
-    container_name: base-nestjs
+    container_name: db-base
     ports:
       - 3000:8888
     volumes:

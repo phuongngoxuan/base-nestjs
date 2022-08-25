@@ -11,6 +11,9 @@ import { UserHistoryEntity } from '../../../models/entities/user-history.entity'
 import { BlockInfoDto } from '../../read-sc/dto/bock-infos.dto';
 import { EventDeposit } from '../dto/event-deposit.dto';
 import { EventBoost } from '../dto/event-boost.dto';
+import { EventClaimBaseRewards } from '../dto/event-claim-base-rewards.dto';
+import { UserInfoRepository } from '../../../models/repositories/user-info.repository';
+import { isBuffer } from 'util';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Web3 = require('web3');
 @Injectable()
@@ -18,24 +21,29 @@ export class HandlerEvent {
   constructor(
     @InjectRepository(UserHistoryRepository)
     private userHistoryRepository: UserHistoryRepository,
+    @InjectRepository(UserInfoRepository)
+    private userInfoRepository: UserInfoRepository,
   ) {}
   // crawler event eth
   async handlerBaseSC(events: LogEventDto[]): Promise<void> {
     for (const eventInfo of events) {
       const { address, blockNumber, logIndex, transactionHash, event } =
         eventInfo;
+      console.log(eventInfo.transactionHash);
+      console.log(eventInfo.logIndex);
       // check duplicate event
+
       const eventHistory = await this.userHistoryRepository.findOne({
-        where: [{ txHash: transactionHash }, { blockNumber }],
+        where: { txHash: transactionHash, logIndex },
       });
-      console.log(
-        '-----------------------------------------------------------------------------------',
-      );
+
       if (!eventHistory) {
         const blockTimestamp = await this.getBlockTimestamp(
           blockNumber,
           process.env.RPC,
         );
+
+        // information is common to all events
         const newUserHistory = new UserHistoryEntity();
         newUserHistory.action = event;
         newUserHistory.logIndex = logIndex;
@@ -43,18 +51,54 @@ export class HandlerEvent {
         newUserHistory.blockNumber = blockNumber;
         newUserHistory.from = address;
         newUserHistory.blockTimestamp = blockTimestamp;
+        newUserHistory.data = JSON.stringify(eventInfo);
+        console.log(eventInfo);
 
+        /*
+         * Data information format for each event
+         */
         switch (event) {
           case eventsName.boost: // user: address, pid: uint256, tokenId: uint256 event Boost
             const eventBoost = eventInfo as EventBoost;
+            const valueEventBoost = eventBoost.returnValues;
+            newUserHistory.poolId = valueEventBoost.pid;
+            newUserHistory.to = valueEventBoost.user;
+            newUserHistory.userAddress = valueEventBoost.user;
             break;
-          case eventsName.deposit: //user: address, pid: uint256, amount:uint256 Deposit
+          case eventsName.deposit: // user: address, pid: uint256, amount:uint256 Deposit
             const eventDeposit = eventInfo as EventDeposit;
+            const valueEventDeposit = eventDeposit.returnValues;
+            newUserHistory.poolId = valueEventDeposit.pid;
+            newUserHistory.to = valueEventDeposit.user;
+            newUserHistory.userAddress = valueEventDeposit.user;
             break;
-          case eventsName.claimReward:
+          case eventsName.claimBaseRewards: // user: address, pid:string, amount:string
+            const eventClaimBaseRewards = eventInfo as EventClaimBaseRewards;
+            const valueEventClaim = eventClaimBaseRewards.returnValues;
+            newUserHistory.poolId = valueEventClaim.pid;
+            newUserHistory.to = valueEventClaim.user;
+            newUserHistory.userAddress = valueEventClaim.user;
             break;
           default:
             break;
+        }
+
+        // check userAddress
+        if (newUserHistory.userAddress) {
+          const userInfo = await this.userInfoRepository.findOne({
+            where: { userAddress: newUserHistory.userAddress },
+          });
+
+          if (!userInfo) {
+            const userInfo = await this.userInfoRepository.save({
+              userAddress: newUserHistory.userAddress,
+            });
+          } else {
+            newUserHistory.userId = userInfo.id;
+            // save userHistory
+            await this.userHistoryRepository.save(newUserHistory);
+            console.log('create history');
+          }
         }
       }
     }

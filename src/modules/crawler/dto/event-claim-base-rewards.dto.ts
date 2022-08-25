@@ -1,12 +1,13 @@
 import { EventInfo } from './event-info.dto';
+
 interface Result {
   '0': string;
   '1': string;
   '2': string;
   user: string;
   pid: string;
-  tokenId: string;
+  amount: string;
 }
-export class EventBoost extends EventInfo {
+export class EventClaimBaseRewards extends EventInfo {
   returnValues: Result;
 }

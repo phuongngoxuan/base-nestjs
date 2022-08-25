@@ -16,4 +16,5 @@ export const eventsName = {
   claimMultipleReward: 'ClaimMultipleReward',
   boost: 'Boost',
   deposit: 'Deposit',
+  claimBaseRewards: 'ClaimBaseRewards',
 };

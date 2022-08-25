@@ -1,9 +1,13 @@
+import { UserInfoEntity } from './user-info.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity('user_histories')
@@ -45,7 +49,7 @@ export class UserHistoryEntity {
   blockTimestamp: number;
 
   @Column({ name: 'pool_id' })
-  poolId: number;
+  poolId: string;
 
   @Column({ name: 'pool_address' })
   poolAddress: string;
@@ -67,4 +71,11 @@ export class UserHistoryEntity {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  @Column({ name: 'user_id' })
+  userId: number;
+
+  @ManyToOne((type) => UserInfoEntity, (user) => user.history)
+  @JoinColumn({ name: 'user_id' })
+  user: UserInfoEntity;
 }

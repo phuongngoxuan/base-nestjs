@@ -1,3 +1,4 @@
+import { EventInfo } from './event-info.dto';
 interface Result {
   '0': string;
   '1': string;
@@ -6,20 +7,6 @@ interface Result {
   pid: string;
   amount: string;
 }
-export class EventDeposit {
-  address: string;
-  blockHash: string;
-  blockNumber: number;
-  logIndex: number;
-  removed: boolean;
-  transactionHash: string;
-  transactionIndex: number;
-  id: string;
+export class EventDeposit extends EventInfo {
   returnValues: Result;
-  event: string;
-  signature: string;
-  raw: {
-    data: string;
-    topics: [];
-  };
 }

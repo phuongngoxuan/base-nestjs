@@ -1,10 +1,7 @@
 import { EntityRepository, In, Repository } from 'typeorm';
 import { QueryUserInfoDto } from '../../modules/user/dto/query-user.dto';
 import { ResGetUserType } from '../../modules/user/type/res-get-user.type';
-import {
-  createUserInfoWithParam,
-  UserInfoEntity,
-} from 'src/models/entities/user-info.entity';
+import { UserInfoEntity } from 'src/models/entities/user-info.entity';
 import {
   Tier,
   MIN_TIME_SILVER,
@@ -15,62 +12,6 @@ import {
 export class UserInfoRepository extends Repository<UserInfoEntity> {
   async findUserAddress(userAddress: string): Promise<UserInfoEntity> {
     return await this.findOne({ where: { userAddress } });
-  }
-
-  async countUserTier(tier: number, now: number): Promise<number> {
-    const builder = this.createQueryBuilder('user_infos');
-    if (tier || tier == 0) {
-      const maxStartStakeBronze = now;
-      const maxStartStakeSilver = now - MIN_TIME_SILVER * 60 * 60 * 24;
-      const maxStartStakeGold = now - MIN_TIME_GOLD * 60 * 60 * 24;
-      switch (tier) {
-        case Tier.NORANK:
-          builder.andWhere('user_infos.startStake = :startStake', {
-            startStake: 0,
-          });
-          break;
-        case Tier.BRONZE:
-          builder
-            .andWhere(
-              'user_infos.startStake > :maxStartStakeSilver  AND  user_infos.startStake < :maxStartStakeBronze',
-              {
-                maxStartStakeSilver,
-                maxStartStakeBronze,
-              },
-            )
-            .andWhere('user_infos.startStake != :startStake', {
-              startStake: 0,
-            });
-          break;
-        case Tier.SILVER:
-          builder
-            .andWhere(
-              'user_infos.startStake > :maxStartStakeGold  AND  user_infos.startStake <= :maxStartStakeSilver',
-              {
-                maxStartStakeGold,
-                maxStartStakeSilver,
-              },
-            )
-            .andWhere('user_infos.startStake != :startStake', {
-              startStake: 0,
-            });
-          break;
-        case Tier.GOLD:
-          builder
-            .andWhere('user_infos.startStake <= :maxStartStakeGold', {
-              maxStartStakeGold,
-            })
-            .andWhere('user_infos.startStake != :startStake', {
-              startStake: 0,
-            });
-          break;
-
-        default:
-          break;
-      }
-    }
-
-    return await builder.getCount();
   }
 
   async getUsers({
@@ -170,19 +111,11 @@ export class UserInfoRepository extends Repository<UserInfoEntity> {
     });
   }
 
-  async getAllUserInfo(): Promise<UserInfoEntity[]> {
-    return this.find();
-  }
-
   async getUser(userAddress: string): Promise<UserInfoEntity> {
     return this.findOne({
       where: {
         userAddress: userAddress,
       },
     });
-  }
-
-  createUserInfoWithParam(address: string, startStake: string): UserInfoEntity {
-    return createUserInfoWithParam(address, startStake);
   }
 }

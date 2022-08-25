@@ -23,7 +23,7 @@ export class CrawlerService {
   }
 
   async rootControllerCrawl(contractInfo: ContractDto): Promise<void> {
-    while (this.passed) {
+    while (this.passed === true) {
       this.passed = false;
       const { lateBlockInSC, blockInDB } = await this.getBlockSCAndBlockDB(
         contractInfo,

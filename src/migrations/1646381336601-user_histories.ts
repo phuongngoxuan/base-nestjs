@@ -1,4 +1,9 @@
-import { MigrationInterface, QueryRunner, Table } from 'typeorm';
+import {
+  MigrationInterface,
+  QueryRunner,
+  Table,
+  TableForeignKey,
+} from 'typeorm';
 export class userHistories1646381336601 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
@@ -16,6 +21,11 @@ export class userHistories1646381336601 implements MigrationInterface {
           {
             name: 'user_address',
             type: 'varchar',
+          },
+          {
+            name: 'user_id',
+            type: 'int',
+            unsigned: true,
           },
           {
             name: 'from',
@@ -63,7 +73,7 @@ export class userHistories1646381336601 implements MigrationInterface {
           },
           {
             name: 'pool_id',
-            type: 'int',
+            type: 'varchar',
             default: 0,
           },
           {
@@ -102,9 +112,25 @@ export class userHistories1646381336601 implements MigrationInterface {
         ],
       }),
     );
+
+    await queryRunner.createForeignKey(
+      'user_histories',
+      new TableForeignKey({
+        columnNames: ['user_id'],
+        referencedColumnNames: ['id'],
+        referencedTableName: 'user_infos',
+        onDelete: 'CASCADE',
+      }),
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    const table = await queryRunner.getTable('user_histories');
+    const foreignKey = table.foreignKeys.find(
+      (fk) => fk.columnNames.indexOf('user_id') !== -1,
+    );
+    await queryRunner.dropForeignKey('user_id', foreignKey);
+    await queryRunner.dropColumn('user_histories', 'user_id');
     await queryRunner.dropTable('user_histories');
   }
 }

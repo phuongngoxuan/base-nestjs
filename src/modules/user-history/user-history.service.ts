@@ -25,9 +25,12 @@ export class UserHistoryService {
   async findTransactionHash(
     txHash: string,
     logIndex: number,
-  ): Promise<UserHistoryEntity> {
-    return await this.userHistoryRepository.findOne({
-      where: { txHash, logIndex },
-    });
+  ): Promise<UserHistoryEntity[]> {
+    const history = await this.userHistoryRepository
+      .createQueryBuilder('user_histories')
+      .leftJoinAndSelect('user_histories.user_id', 'user_info')
+      .getMany();
+
+    return history;
   }
 }

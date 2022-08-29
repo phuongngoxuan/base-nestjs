@@ -29,10 +29,11 @@ export class UserHistoryService {
     // format data
     userHistories.data = userHistories.data.map((history) => {
       const user = { id: history.id, userAddress: history.userAddress };
-      const newHistory = history as any;
-      newHistory.user = user;
+      const { data, ...history2 } = history;
+      const historyInfo = history2 as any;
+      historyInfo.user = user;
 
-      return { ...newHistory };
+      return historyInfo;
     });
 
     return userHistories;

@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
   OneToMany,
+  JoinTable,
 } from 'typeorm';
 
 @Entity('user_infos')

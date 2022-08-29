@@ -30,7 +30,9 @@ export class UserHistoryRepository extends Repository<UserHistoryEntity> {
     builder.offset((page - 1) * limit).limit(limit);
 
     return {
-      data: await builder.getMany(),
+      data: await builder
+        .leftJoinAndSelect('user_histories.user', 'user_infos')
+        .getMany(),
       total: total,
       page,
       lastPage: Math.ceil(total / limit),

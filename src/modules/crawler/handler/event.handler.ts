@@ -29,10 +29,8 @@ export class HandlerEvent {
     for (const eventInfo of events) {
       const { address, blockNumber, logIndex, transactionHash, event } =
         eventInfo;
-      console.log(eventInfo.transactionHash);
-      console.log(eventInfo.logIndex);
-      // check duplicate event
 
+      // check duplicate event
       const eventHistory = await this.userHistoryRepository.findOne({
         where: { txHash: transactionHash, logIndex },
       });

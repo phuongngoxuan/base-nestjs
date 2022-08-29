@@ -8,6 +8,7 @@ import {
   ManyToOne,
   OneToMany,
   JoinColumn,
+  OneToOne,
 } from 'typeorm';
 
 @Entity('user_histories')
@@ -76,6 +77,6 @@ export class UserHistoryEntity {
   userId: number;
 
   @ManyToOne((type) => UserInfoEntity, (user) => user.history)
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn({ referencedColumnName: 'id', name: 'user_id' })
   user: UserInfoEntity;
 }

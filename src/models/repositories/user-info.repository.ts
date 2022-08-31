@@ -43,12 +43,13 @@ export class UserInfoRepository extends Repository<UserInfoEntity> {
       builder.offset((page - 1) * limit).limit(limit);
     }
 
-    /* note:
-     * search date or block
+    /* note example search date or block:
+     *
      * if search from_date or to_date search one day
      *   if(to_date) -> (to_date - 86399) ->  query [time, time+ 86399 ]
      * if (from_date && to_date) -> query [from_date,to_date]
      * search block similar
+     *
      */
     // if ((from_date && !to_date) || (!from_date && to_date)) {
     //   let timeSearch = Number(from_date) || Number(to_date);

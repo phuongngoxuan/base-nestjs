@@ -2,11 +2,6 @@ import { EntityRepository, In, Repository } from 'typeorm';
 import { QueryUserInfoDto } from '../../modules/user/dto/query-user.dto';
 import { ResGetUserType } from '../../modules/user/type/res-get-user.type';
 import { UserInfoEntity } from 'src/models/entities/user-info.entity';
-import {
-  Tier,
-  MIN_TIME_SILVER,
-  MIN_TIME_GOLD,
-} from 'src/modules/user/constant/user.constant';
 
 @EntityRepository(UserInfoEntity)
 export class UserInfoRepository extends Repository<UserInfoEntity> {
@@ -23,65 +18,16 @@ export class UserInfoRepository extends Repository<UserInfoEntity> {
     all,
   }: QueryUserInfoDto): Promise<ResGetUserType> {
     const builder = this.createQueryBuilder('user_infos');
+
     // search address
     if (account) {
       builder.where('user_infos.userAddress like :userAddress', {
         userAddress: `%${account}%`,
       });
     }
+    // time now (second)
     const now = Math.floor(new Date().getTime() / 1000);
 
-    if (tier || tier == 0) {
-      const maxStartStakeBronze = now;
-      const maxStartStakeSilver = now - MIN_TIME_SILVER * 60 * 60 * 24;
-      const maxStartStakeGold = now - MIN_TIME_GOLD * 60 * 60 * 24;
-
-      switch (tier) {
-        case Tier.NORANK:
-          builder.andWhere('user_infos.startStake = :startStake', {
-            startStake: 0,
-          });
-          break;
-        case Tier.BRONZE:
-          builder
-            .andWhere(
-              'user_infos.startStake > :maxStartStakeSilver  AND  user_infos.startStake < :maxStartStakeBronze',
-              {
-                maxStartStakeSilver,
-                maxStartStakeBronze,
-              },
-            )
-            .andWhere('user_infos.startStake != :startStake', {
-              startStake: 0,
-            });
-          break;
-        case Tier.SILVER:
-          builder
-            .andWhere(
-              'user_infos.startStake > :maxStartStakeGold  AND  user_infos.startStake <= :maxStartStakeSilver',
-              {
-                maxStartStakeGold,
-                maxStartStakeSilver,
-              },
-            )
-            .andWhere('user_infos.startStake != :startStake', {
-              startStake: 0,
-            });
-          break;
-        case Tier.GOLD:
-          builder
-            .andWhere('user_infos.startStake <= :maxStartStakeGold', {
-              maxStartStakeGold,
-            })
-            .andWhere('user_infos.startStake != :startStake', {
-              startStake: 0,
-            });
-          break;
-
-        default:
-          break;
-      }
-    }
     // sort
     if (sort) {
       const sortConvert = sort.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
@@ -89,11 +35,41 @@ export class UserInfoRepository extends Repository<UserInfoEntity> {
     } else {
       builder.orderBy('user_infos.createdAt', 'DESC');
     }
+    // total
     const total = await builder.getCount();
+
     // paging
     if (!all) {
       builder.offset((page - 1) * limit).limit(limit);
     }
+
+    /* note:
+     * search date or block
+     * if search from_date or to_date search one day
+     *   if(to_date) -> (to_date - 86399) ->  query [time, time+ 86399 ]
+     * if (from_date && to_date) -> query [from_date,to_date]
+     * search block similar
+     */
+    // if ((from_date && !to_date) || (!from_date && to_date)) {
+    //   let timeSearch = Number(from_date) || Number(to_date);
+    //   //example input query , from_date = 1654707600, to_date = 1654793999
+    //   if (to_date) timeSearch = timeSearch - 86399;
+    //   arrCondition.push({ blockTimestamp: { $gte: timeSearch } });
+    //   arrCondition.push({ blockTimestamp: { $lte: timeSearch + 86399 } }); // search one day
+    // }
+    // if (from_date && to_date) {
+    //   arrCondition.push({ blockTimestamp: { $gte: Number(from_date) } });
+    //   arrCondition.push({ blockTimestamp: { $lte: Number(to_date) } });
+    // }
+
+    // //search block
+    // if ((from_block && !to_block) || (!from_block && to_block)) {
+    //   arrCondition.push({ blockNumber: Number(from_block) || Number(to_block) });
+    // }
+    // if (from_block && to_block) {
+    //   if (from_block) arrCondition.push({ blockNumber: { $gte: Number(from_block) } });
+    //   if (to_block) arrCondition.push({ blockNumber: { $lte: Number(to_block) } });
+    // }
 
     return {
       data: await builder.getMany(),

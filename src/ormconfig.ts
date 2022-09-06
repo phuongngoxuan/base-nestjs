@@ -1,8 +1,8 @@
-import { defaultConfig } from 'src/configs/database.config';
+import { masterConfig, reportConfig } from 'src/configs/database.config';
 import { ConnectionOptions } from 'typeorm';
 
 const config: ConnectionOptions = {
-  ...defaultConfig,
+  ...masterConfig,
   logging: true,
   logger: 'file',
   migrationsTableName: 'migrate_tables',

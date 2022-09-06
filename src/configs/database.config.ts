@@ -14,7 +14,14 @@ export interface DatabaseConfig {
   };
 }
 
-export const defaultConfig = {
-  ...getConfig().get<DatabaseConfig>('default'),
+export const masterConfig = {
+  ...getConfig().get<DatabaseConfig>('master'),
   autoLoadEntities: true,
+  name: 'master',
+};
+
+export const reportConfig = {
+  ...getConfig().get<DatabaseConfig>('report'),
+  autoLoadEntities: true,
+  name: 'report',
 };

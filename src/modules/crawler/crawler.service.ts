@@ -12,8 +12,8 @@ const Web3 = require('web3');
 @Injectable()
 export class CrawlerService {
   constructor(
-    @InjectRepository(CrawlStatusRepository)
-    private crawlStatusRepository: CrawlStatusRepository,
+    @InjectRepository(CrawlStatusRepository, 'master')
+    private crawlStatusRepositoryMaster: CrawlStatusRepository,
     private handlerEvent: HandlerEvent,
   ) {}
   passed = true;
@@ -95,7 +95,7 @@ export class CrawlerService {
       contract.rpc,
     );
 
-    await this.crawlStatusRepository.update(
+    await this.crawlStatusRepositoryMaster.update(
       { contractName: contract.contractName },
       { blockNumber, blockTimestamp },
     );
@@ -118,7 +118,7 @@ export class CrawlerService {
   // get block number in db
   async getBlockNumberInDB(contract: ContractDto): Promise<number> {
     const { contractName } = contract;
-    const log = await this.crawlStatusRepository.findOne({
+    const log = await this.crawlStatusRepositoryMaster.findOne({
       where: { contractName },
     });
 
@@ -134,7 +134,7 @@ export class CrawlerService {
       );
       crawl.blockTimestamp = timeStamp;
       // create new record crawlerInfo in database
-      await this.crawlStatusRepository.save(crawl, { reload: false });
+      await this.crawlStatusRepositoryMaster.save(crawl, { reload: false });
       return crawl.blockNumber;
     } else {
       return Number(log.blockNumber);

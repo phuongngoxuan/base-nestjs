@@ -19,10 +19,10 @@ const Web3 = require('web3');
 @Injectable()
 export class HandlerEvent {
   constructor(
-    @InjectRepository(UserHistoryRepository)
-    private userHistoryRepository: UserHistoryRepository,
-    @InjectRepository(UserInfoRepository)
-    private userInfoRepository: UserInfoRepository,
+    @InjectRepository(UserHistoryRepository, 'master')
+    private userHistoryRepositoryMaster: UserHistoryRepository,
+    @InjectRepository(UserInfoRepository, 'master')
+    private userInfoRepositoryMaster: UserInfoRepository,
   ) {}
   // crawler event eth
   async handlerBaseSC(events: LogEventDto[]): Promise<void> {
@@ -31,7 +31,7 @@ export class HandlerEvent {
         eventInfo;
 
       // check duplicate event
-      const eventHistory = await this.userHistoryRepository.findOne({
+      const eventHistory = await this.userHistoryRepositoryMaster.findOne({
         where: { txHash: transactionHash, logIndex },
       });
 
@@ -83,18 +83,18 @@ export class HandlerEvent {
 
         // check userAddress
         if (newUserHistory.userAddress) {
-          const userInfo = await this.userInfoRepository.findOne({
+          const userInfo = await this.userInfoRepositoryMaster.findOne({
             where: { userAddress: newUserHistory.userAddress },
           });
 
           if (!userInfo) {
-            const userInfo = await this.userInfoRepository.save({
+            const userInfo = await this.userInfoRepositoryMaster.save({
               userAddress: newUserHistory.userAddress,
             });
           } else {
             newUserHistory.userId = userInfo.id;
             // save userHistory
-            await this.userHistoryRepository.save(newUserHistory);
+            await this.userHistoryRepositoryMaster.save(newUserHistory);
             console.log('create history');
           }
         }

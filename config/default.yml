@@ -5,7 +5,18 @@ app:
   url: 127.0.0.1
   prefix: api/v1
 
-default:
+master:
+  type: mysql
+  host: 'http://127.0.0.1'
+  port: 3322
+  username: "test"
+  password: "1"
+  database: "base"
+  logging: true
+  entities:
+    - 'dist/**/*.entity{.ts,.js}'
+
+report:
   type: mysql
   host: 'http://127.0.0.1'
   port: 3322

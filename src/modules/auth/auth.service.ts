@@ -5,12 +5,16 @@ import { AdminService } from '../admin/admin.service';
 import { Tokens } from './types/token.type';
 import { createHash } from 'crypto';
 import { resTokenType } from './types/response-token.type';
+import { InjectRepository } from '@nestjs/typeorm';
+import { AdminRepository } from '../../models/repositories/admin-info.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
     private authUtilsService: AuthUtilsService,
     private adminService: AdminService,
+    @InjectRepository(AdminRepository, 'master')
+    private adminRepositoryMaster: AdminRepository,
   ) {}
 
   async login(loginDto: LoginDto): Promise<resTokenType> {
@@ -26,7 +30,10 @@ export class AuthService {
       .digest('hex');
 
     // update RT in table admin
-    await this.adminService.updateRefreshToken(admin);
+    await this.adminRepositoryMaster.update(
+      { walletAddress: admin.walletAddress },
+      admin,
+    );
 
     return {
       ...tokens,
@@ -68,10 +75,11 @@ export class AuthService {
       .update(tokens.refreshToken)
       .digest('hex');
 
-    await this.adminService.updateRefreshToken({
-      ...admin,
-      refreshToken: newHashRt,
-    });
+    // update refreshToken
+    await this.adminRepositoryMaster.update(
+      { walletAddress: admin.walletAddress },
+      { ...admin, refreshToken: newHashRt },
+    );
 
     return {
       ...tokens,

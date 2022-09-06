@@ -17,12 +17,12 @@ const db = process.env.MYSQL_DATABASE;
 @Injectable()
 export class UserHistoryService {
   constructor(
-    @InjectRepository(UserHistoryRepository, 'default')
-    private userHistoryRepository: UserHistoryRepository,
+    @InjectRepository(UserHistoryRepository, 'master')
+    private userHistoryRepositoryMaster: UserHistoryRepository,
   ) {}
 
   async getUserHistory(query: QueryUserHistoryDto) {
-    const userHistories = await this.userHistoryRepository.getHistoryUser(
+    const userHistories = await this.userHistoryRepositoryMaster.getHistoryUser(
       query,
     );
 
@@ -43,7 +43,7 @@ export class UserHistoryService {
     txHash: string,
     logIndex: number,
   ): Promise<UserHistoryEntity[]> {
-    const history = await this.userHistoryRepository.query(
+    const history = await this.userHistoryRepositoryMaster.query(
       `SELECT * FROM user_histories LEFT JOIN ${db}.user_infos AS userInfo ON ${db}.userInfo.id = user_histories.user_id
       `,
     );

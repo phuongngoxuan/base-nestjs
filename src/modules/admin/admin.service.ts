@@ -8,28 +8,29 @@ import { ResGetAdminType } from './type/response-get-admin.type';
 @Injectable()
 export class AdminService {
   constructor(
-    @InjectRepository(AdminRepository) private adminRepository: AdminRepository,
+    @InjectRepository(AdminRepository, 'master')
+    private adminRepositoryMaster: AdminRepository,
   ) {}
 
   async getAdminList(queryDto: QueryAdminDto): Promise<ResGetAdminType> {
-    return await this.adminRepository.getAdminList(queryDto);
+    return await this.adminRepositoryMaster.getAdminList(queryDto);
   }
 
   async findOne(walletAddress: string): Promise<AdminEntity> {
-    return await this.adminRepository.findOne({
+    return await this.adminRepositoryMaster.findOne({
       where: { walletAddress },
     });
   }
 
   async updateRefreshToken(data: AdminEntity): Promise<void> {
-    await this.adminRepository.update(
+    await this.adminRepositoryMaster.update(
       { walletAddress: data.walletAddress },
       data,
     );
   }
 
   async deleteRefreshToken(walletAddress: string): Promise<void> {
-    await this.adminRepository.update(
+    await this.adminRepositoryMaster.update(
       { walletAddress },
       { refreshToken: null },
     );

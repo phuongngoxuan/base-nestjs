@@ -3,7 +3,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { BullModule } from '@nestjs/bull';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConsoleModule } from 'nestjs-console';
-import { defaultConfig } from 'src/configs/database.config';
+import { masterConfig, reportConfig } from 'src/configs/database.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { CrawlerModule } from './modules/crawler/crawler.module';
 import { AdminModule } from './modules/admin/admin.module';
@@ -19,7 +19,8 @@ import { MailModule } from './modules/mail/mail.module';
 
 const Modules = [
   ScheduleModule.forRoot(),
-  TypeOrmModule.forRoot(defaultConfig),
+  TypeOrmModule.forRoot(masterConfig),
+  TypeOrmModule.forRoot(reportConfig),
   DatabaseCommonRepository,
   ConsoleModule,
   AuthModule,

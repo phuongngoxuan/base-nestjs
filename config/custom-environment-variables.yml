@@ -4,7 +4,14 @@ app:
   env: NODE_ENV
   isTest: IS_TEST
 
-default:
+master:
+  host: MYSQL_HOST
+  port: MYSQL_PORT
+  username: MYSQL_USERNAME
+  password: MYSQL_PASSWORD
+  database: MYSQL_DATABASE
+
+report:
   host: MYSQL_HOST
   port: MYSQL_PORT
   username: MYSQL_USERNAME

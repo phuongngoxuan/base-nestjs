@@ -14,7 +14,10 @@ const commonRepositories = [
 
 @Global()
 @Module({
-  imports: [TypeOrmModule.forFeature(commonRepositories, 'default')],
+  imports: [
+    TypeOrmModule.forFeature(commonRepositories, 'master'),
+    TypeOrmModule.forFeature(commonRepositories, 'report'),
+  ],
   exports: [TypeOrmModule],
 })
 export class DatabaseCommonRepository {}

@@ -15,9 +15,6 @@ export class AdminEntity {
   @Column({ name: 'wallet_address', unique: true })
   public walletAddress: string;
 
-  @Column({ name: 'refresh_token' })
-  public refreshToken: string;
-
   @CreateDateColumn({ name: 'created_at' })
   public createdAt: number;
 

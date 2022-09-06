@@ -3,7 +3,7 @@ import { HttpModule } from '@nestjs/axios';
 import { CrawlerService } from './crawler.service';
 import { EventModule } from '../event/event.module';
 import { HandlerEvent } from './handler/event.handler';
-import { CrawlerAllEventService } from './crawler-all-event.service';
+import { CrawlerAllEventService } from './crawler-event.service';
 import { ReadScModule } from '../read-sc/read-sc.module';
 
 @Module({

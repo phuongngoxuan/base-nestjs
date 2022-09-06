@@ -21,11 +21,6 @@ export class adminInfos1647163658149 implements MigrationInterface {
             isUnique: true,
           },
           {
-            name: 'refresh_token',
-            type: 'varchar',
-            isNullable: false,
-          },
-          {
             name: 'created_at',
             type: 'datetime',
             isNullable: false,

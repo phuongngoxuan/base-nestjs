@@ -28,11 +28,4 @@ export class AdminService {
       data,
     );
   }
-
-  async deleteRefreshToken(walletAddress: string): Promise<void> {
-    await this.adminRepositoryMaster.update(
-      { walletAddress },
-      { refreshToken: null },
-    );
-  }
 }

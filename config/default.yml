@@ -35,3 +35,6 @@ cron:
 redis:
   host: 'http://127.0.0.1'
   port:  6380
+
+ttl: 
+  rtCache: 600

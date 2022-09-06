@@ -1,4 +1,9 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  CACHE_MANAGER,
+  Inject,
+} from '@nestjs/common';
 import { AuthUtilsService } from './utils/auth.util';
 import { LoginDto } from './dto/login.dto';
 import { AdminService } from '../admin/admin.service';
@@ -7,6 +12,9 @@ import { createHash } from 'crypto';
 import { resTokenType } from './types/response-token.type';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AdminRepository } from '../../models/repositories/admin-info.repository';
+import { Cache } from 'cache-manager';
+import { getConfig } from 'src/configs/index';
+const ttlRT = getConfig().get<string>('ttl.rtCache');
 
 @Injectable()
 export class AuthService {
@@ -15,6 +23,7 @@ export class AuthService {
     private adminService: AdminService,
     @InjectRepository(AdminRepository, 'master')
     private adminRepositoryMaster: AdminRepository,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async login(loginDto: LoginDto): Promise<resTokenType> {
@@ -25,14 +34,17 @@ export class AuthService {
     const tokens = await this.authUtilsService.getToken(loginDto);
 
     // hash RT
-    admin.refreshToken = createHash('sha256')
+    const RTHast = createHash('sha256')
       .update(tokens.refreshToken)
       .digest('hex');
 
-    // update RT in table admin
-    await this.adminRepositoryMaster.update(
-      { walletAddress: admin.walletAddress },
-      admin,
+    // update RT cache
+    await this.cacheManager.set<string>(
+      `RTCache_${admin.walletAddress}`,
+      RTHast,
+      {
+        ttl: ttlRT,
+      },
     );
 
     return {
@@ -43,7 +55,7 @@ export class AuthService {
   }
 
   async logout(walletAddress: string): Promise<void> {
-    await this.adminService.deleteRefreshToken(walletAddress);
+    await this.cacheManager.del(`RTCache_${walletAddress}`);
   }
 
   async refreshToken(
@@ -52,17 +64,19 @@ export class AuthService {
     message: string,
     refreshToken: string,
   ): Promise<resTokenType> {
-    // check admin exit
-    const admin = await this.adminService.findOne(walletAddress);
-    if (!admin) {
+    const RTCache = await this.cacheManager.get(`RTCache_${walletAddress}`);
+
+    // check RT cache
+    if (!RTCache) {
       throw new ForbiddenException('Access Denied');
     }
 
     // hash RT input and compare RT in database
     const rtMatches = createHash('sha256').update(refreshToken).digest('hex');
-    if (rtMatches != admin.refreshToken) {
+    if (rtMatches != RTCache) {
       throw new ForbiddenException('Access Denied');
     }
+
     // create new AT and RT
     const tokens = await this.authUtilsService.getToken({
       walletAddress,
@@ -75,11 +89,10 @@ export class AuthService {
       .update(tokens.refreshToken)
       .digest('hex');
 
-    // update refreshToken
-    await this.adminRepositoryMaster.update(
-      { walletAddress: admin.walletAddress },
-      { ...admin, refreshToken: newHashRt },
-    );
+    // update RT cache
+    await this.cacheManager.set<string>(`RTCache_${walletAddress}`, newHashRt, {
+      ttl: ttlRT,
+    });
 
     return {
       ...tokens,

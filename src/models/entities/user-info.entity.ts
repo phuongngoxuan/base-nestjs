@@ -1,4 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { UserHistoryEntity } from './user-history.entity';
 import {
   Entity,
@@ -6,9 +5,7 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToOne,
   OneToMany,
-  JoinTable,
 } from 'typeorm';
 
 @Entity('user_infos')

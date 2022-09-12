@@ -6,9 +6,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
-  OneToMany,
   JoinColumn,
-  OneToOne,
 } from 'typeorm';
 
 @Entity('user_histories')

@@ -1,4 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { UserHistoryEntity } from './user-history.entity';
 import {
   Entity,
@@ -6,10 +5,9 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToOne,
   OneToMany,
-  JoinTable,
 } from 'typeorm';
+import { UserInfoPoolInfosEntity } from './user_infos_pool_infos';
 
 @Entity('user_infos')
 export class UserInfoEntity {
@@ -33,4 +31,7 @@ export class UserInfoEntity {
 
   @OneToMany((type) => UserHistoryEntity, (history) => history.user)
   history: UserHistoryEntity[];
+
+  @OneToMany((type) => UserInfoPoolInfosEntity, (UIPI) => UIPI.user)
+  userPool: UserInfoPoolInfosEntity[];
 }
